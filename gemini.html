@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Name - IT Portfolio</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS for advanced styles -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+        }
+
+        /* --- Glassmorphism Effect --- */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* --- Animated Gradient Border --- */
+        .gradient-border {
+            position: relative;
+            z-index: 1;
+        }
+
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 0.75rem; /* Corresponds to rounded-xl */
+            border: 2px solid transparent;
+            background: linear-gradient(120deg, #89f7fe, #66a6ff, #89f7fe) border-box;
+            background-size: 200% 200%;
+            -webkit-mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
+            z-index: -1;
+            animation: border-animation 3s linear infinite;
+        }
+
+        @keyframes border-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- Custom Scrollbar --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #66a6ff;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #89f7fe;
+        }
+
+        /* --- Scroll Animation Classes --- */
+        .reveal {
+            position: relative;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: 1s all ease;
+        }
+
+        .reveal.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* --- Hero Section Typing Cursor --- */
+        .typed-cursor {
+            color: #89f7fe;
+            animation: blink 0.7s infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- Particle.js Background Container -->
+    <div id="particles-js" class="fixed top-0 left-0 w-full h-full z-0"></div>
+
+    <!-- Main Content -->
+    <div class="relative z-10">
+
+        <!-- Header -->
+        <header class="fixed top-0 left-0 w-full p-4 glass-card z-50">
+            <div class="container mx-auto flex justify-between items-center">
+                <a href="#" class="text-2xl font-bold tracking-wider text-white">PORTFOLIO</a>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#about" class="hover:text-[#89f7fe] transition duration-300">About</a>
+                    <a href="#skills" class="hover:text-[#89f7fe] transition duration-300">Skills</a>
+                    <a href="#projects" class="hover:text-[#89f7fe] transition duration-300">Projects</a>
+                    <a href="#contact" class="hover:text-[#89f7fe] transition duration-300">Contact</a>
+                </nav>
+                <button id="mobile-menu-button" class="md:hidden p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+             <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4">
+                <a href="#about" class="block py-2 px-4 text-sm hover:bg-gray-700 rounded">About</a>
+                <a href="#skills" class="block py-2 px-4 text-sm hover:bg-gray-700 rounded">Skills</a>
+                <a href="#projects" class="block py-2 px-4 text-sm hover:bg-gray-700 rounded">Projects</a>
+                <a href="#contact" class="block py-2 px-4 text-sm hover:bg-gray-700 rounded">Contact</a>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-6 md:px-12">
+
+            <!-- Hero Section -->
+            <section id="home" class="min-h-screen flex flex-col md:flex-row items-center justify-center text-center md:text-left">
+                <div class="md:w-1/2 md:pr-10">
+                    <h1 class="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-4">
+                        Hi, I'm <span class="text-[#89f7fe]">Your Name</span>
+                    </h1>
+                    <h2 class="text-2xl md:text-3xl font-light mb-6">
+                        I'm a <span id="typed-text" class="font-semibold"></span>
+                    </h2>
+                    <p class="text-gray-300 mb-8 max-w-lg mx-auto md:mx-0">
+                        Passionate IT Engineering student specializing in building innovative and high-performance digital solutions. Welcome to my creative space.
+                    </p>
+                    <a href="#projects" class="bg-gradient-to-r from-[#66a6ff] to-[#89f7fe] text-black font-bold py-3 px-8 rounded-full hover:scale-105 transition-transform duration-300 shadow-lg shadow-[#66a6ff]/30">
+                        View My Work
+                    </a>
+                </div>
+                 <!-- To change image, replace the src of the img tag below -->
+                <div class="mt-10 md:mt-0 md:w-1/2 flex justify-center">
+                    <div class="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden gradient-border p-2">
+                        <img src="C:\Users\skass\OneDrive\Desktop\AA.jpg" alt="Your Name" class="w-full h-full object-cover rounded-full">
+                    </div>
+                </div>
+            </section>
+
+            <!-- About Section -->
+            <section id="about" class="py-24 reveal">
+                <div class="glass-card rounded-xl p-8 md:p-12">
+                    <h2 class="text-3xl font-bold text-center mb-12">About Me</h2>
+                    <div class="flex flex-col md:flex-row items-center gap-12">
+                        <div class="md:w-2/3">
+                            <p class="mb-4">Hello! I'm an IT Engineering student with a deep passion for technology and problem-solving. My journey in tech started with a simple "Hello, World!" program, and since then, I've been captivated by the power of code to create meaningful and impactful solutions.</p>
+                            <p class="mb-4">I thrive on challenges and am constantly exploring new technologies. My expertise lies in full-stack development, cloud computing, and dabbling in the exciting world of Artificial Intelligence and Machine Learning.</p>
+                            <p>When I'm not coding, you can find me contributing to open-source projects, exploring the latest tech blogs, or enjoying a good sci-fi movie.</p>
+                        </div>
+                         <div class="md:w-1/3 text-center">
+                            <div class="bg-[#1a1a1a] rounded-lg p-6">
+                                <h3 class="font-semibold text-lg mb-4 text-[#89f7fe]">Key Stats</h3>
+                                <div class="space-y-4">
+                                    <div class="text-left">
+                                        <p>Projects Completed: 15+</p>
+                                        <div class="w-full bg-gray-700 rounded-full h-1.5"><div class="bg-gradient-to-r from-[#66a6ff] to-[#89f7fe] h-1.5 rounded-full" style="width: 80%"></div></div>
+                                    </div>
+                                    <div class="text-left">
+                                        <p>Years of Experience: 3</p>
+                                        <div class="w-full bg-gray-700 rounded-full h-1.5"><div class="bg-gradient-to-r from-[#66a6ff] to-[#89f7fe] h-1.5 rounded-full" style="width: 60%"></div></div>
+                                    </div>
+                                    <div class="text-left">
+                                        <p>Happy Clients: 5</p>
+                                        <div class="w-full bg-gray-700 rounded-full h-1.5"><div class="bg-gradient-to-r from-[#66a6ff] to-[#89f7fe] h-1.5 rounded-full" style="width: 100%"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Skills Section -->
+            <section id="skills" class="py-24 reveal">
+                <h2 class="text-3xl font-bold text-center mb-12">Technical Skills</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8">
+                    <!-- Skill Item Example. Add more as needed -->
+                    <div class="flex flex-col items-center p-4 glass-card rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://www.vectorlogo.zone/logos/python/python-icon.svg" alt="Python" class="h-16 w-16 mb-2">
+                        <span class="font-medium">Python</span>
+                    </div>
+                    <div class="flex flex-col items-center p-4 glass-card rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://www.vectorlogo.zone/logos/javascript/javascript-icon.svg" alt="JavaScript" class="h-16 w-16 mb-2">
+                        <span class="font-medium">JavaScript</span>
+                    </div>
+                    <div class="flex flex-col items-center p-4 glass-card rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://www.vectorlogo.zone/logos/reactjs/reactjs-icon.svg" alt="React" class="h-16 w-16 mb-2">
+                        <span class="font-medium">React</span>
+                    </div>
+                    <div class="flex flex-col items-center p-4 glass-card rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://www.vectorlogo.zone/logos/nodejs/nodejs-icon.svg" alt="Node.js" class="h-16 w-16 mb-2">
+                        <span class="font-medium">Node.js</span>
+                    </div>
+                    <div class="flex flex-col items-center p-4 glass-card rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://www.vectorlogo.zone/logos/docker/docker-icon.svg" alt="Docker" class="h-16 w-16 mb-2">
+                        <span class="font-medium">Docker</span>
+                    </div>
+                    <div class="flex flex-col items-center p-4 glass-card rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://www.vectorlogo.zone/logos/amazon_aws/amazon_aws-icon.svg" alt="AWS" class="h-16 w-16 mb-2">
+                        <span class="font-medium">AWS</span>
+                    </div>
+                    <div class="flex flex-col items-center p-4 glass-card rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://www.vectorlogo.zone/logos/tensorflow/tensorflow-icon.svg" alt="TensorFlow" class="h-16 w-16 mb-2">
+                        <span class="font-medium">TensorFlow</span>
+                    </div>
+                    <div class="flex flex-col items-center p-4 glass-card rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://www.vectorlogo.zone/logos/postgresql/postgresql-icon.svg" alt="PostgreSQL" class="h-16 w-16 mb-2">
+                        <span class="font-medium">PostgreSQL</span>
+                    </div>
+                     <div class="flex flex-col items-center p-4 glass-card rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://www.vectorlogo.zone/logos/tailwindcss/tailwindcss-icon.svg" alt="Tailwind CSS" class="h-16 w-16 mb-2">
+                        <span class="font-medium">Tailwind CSS</span>
+                    </div>
+                     <div class="flex flex-col items-center p-4 glass-card rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://www.vectorlogo.zone/logos/git-scm/git-scm-icon.svg" alt="Git" class="h-16 w-16 mb-2">
+                        <span class="font-medium">Git</span>
+                    </div>
+                     <div class="flex flex-col items-center p-4 glass-card rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://www.vectorlogo.zone/logos/java/java-icon.svg" alt="Java" class="h-16 w-16 mb-2">
+                        <span class="font-medium">Java</span>
+                    </div>
+                     <div class="flex flex-col items-center p-4 glass-card rounded-xl hover:-translate-y-2 transition-transform duration-300">
+                        <img src="https://www.vectorlogo.zone/logos/cplusplus/cplusplus-icon.svg" alt="C++" class="h-16 w-16 mb-2">
+                        <span class="font-medium">C++</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Projects Section -->
+            <section id="projects" class="py-24 reveal">
+                 <h2 class="text-3xl font-bold text-center mb-12">Featured Projects</h2>
+                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Project Card 1 -->
+                    <div class="glass-card rounded-xl overflow-hidden group">
+                        <img src="https://placehold.co/600x400/0f0f0f/66a6ff?text=Project+One" alt="Project One" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-2">AI-Powered Chatbot</h3>
+                            <p class="text-gray-400 mb-4 text-sm">A responsive chatbot using NLP to understand and respond to user queries in real-time.</p>
+                            <div class="flex gap-2 mb-4">
+                                <span class="bg-blue-900/50 text-[#89f7fe] text-xs font-semibold px-2.5 py-0.5 rounded-full">Python</span>
+                                <span class="bg-blue-900/50 text-[#89f7fe] text-xs font-semibold px-2.5 py-0.5 rounded-full">TensorFlow</span>
+                            </div>
+                            <a href="#" class="text-[#89f7fe] hover:underline">View Details &rarr;</a>
+                        </div>
+                    </div>
+                    <!-- Project Card 2 -->
+                    <div class="glass-card rounded-xl overflow-hidden group">
+                        <img src="https://placehold.co/600x400/0f0f0f/89f7fe?text=Project+Two" alt="Project Two" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-2">E-commerce Platform</h3>
+                            <p class="text-gray-400 mb-4 text-sm">Full-stack e-commerce site with user auth, product catalog, and Stripe payment integration.</p>
+                             <div class="flex gap-2 mb-4">
+                                <span class="bg-blue-900/50 text-[#89f7fe] text-xs font-semibold px-2.5 py-0.5 rounded-full">React</span>
+                                <span class="bg-blue-900/50 text-[#89f7fe] text-xs font-semibold px-2.5 py-0.5 rounded-full">Node.js</span>
+                                <span class="bg-blue-900/50 text-[#89f7fe] text-xs font-semibold px-2.5 py-0.5 rounded-full">MongoDB</span>
+                            </div>
+                            <a href="#" class="text-[#89f7fe] hover:underline">View Details &rarr;</a>
+                        </div>
+                    </div>
+                    <!-- Project Card 3 -->
+                    <div class="glass-card rounded-xl overflow-hidden group">
+                        <img src="https://placehold.co/600x400/0f0f0f/FFFFFF?text=Project+Three" alt="Project Three" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-2">Cloud File Storage</h3>
+                            <p class="text-gray-400 mb-4 text-sm">A serverless application on AWS for secure file uploads, storage, and retrieval.</p>
+                             <div class="flex gap-2 mb-4">
+                                <span class="bg-blue-900/50 text-[#89f7fe] text-xs font-semibold px-2.5 py-0.5 rounded-full">AWS Lambda</span>
+                                <span class="bg-blue-900/50 text-[#89f7fe] text-xs font-semibold px-2.5 py-0.5 rounded-full">S3</span>
+                                <span class="bg-blue-900/50 text-[#89f7fe] text-xs font-semibold px-2.5 py-0.5 rounded-full">API Gateway</span>
+                            </div>
+                            <a href="#" class="text-[#89f7fe] hover:underline">View Details &rarr;</a>
+                        </div>
+                    </div>
+                 </div>
+            </section>
+
+            <!-- Contact Section -->
+            <section id="contact" class="py-24 reveal">
+                <div class="glass-card rounded-xl p-8 md:p-12 text-center">
+                    <h2 class="text-3xl font-bold mb-4">Let's Connect</h2>
+                    <p class="text-gray-300 max-w-2xl mx-auto mb-8">I'm currently looking for new opportunities and collaborations. Feel free to reach out, whether you have a question or just want to say hi. I'll get back to you!</p>
+                    <a href="mailto:youremail@example.com" class="inline-block bg-gradient-to-r from-[#66a6ff] to-[#89f7fe] text-black font-bold py-3 px-8 rounded-full hover:scale-105 transition-transform duration-300 shadow-lg shadow-[#66a6ff]/30">
+                        Say Hello
+                    </a>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="py-8 text-center text-gray-400">
+            <div class="container mx-auto">
+                <div class="flex justify-center space-x-6 mb-4">
+                    <!-- Replace # with your actual social links -->
+                    <a href="#" class="hover:text-white transition-colors duration-300">GitHub</a>
+                    <a href="#" class="hover:text-white transition-colors duration-300">LinkedIn</a>
+                    <a href="#" class="hover:text-white transition-colors duration-300">Twitter</a>
+                </div>
+                <p>&copy; 2024 Your Name. All Rights Reserved.</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- External JS Libraries -->
+    <!-- particles.js for background animation -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <!-- typed.js for typing animation -->
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // --- Particle.js Initialization ---
+        particlesJS("particles-js", {
+            "particles": {
+                "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": "#ffffff" },
+                "shape": { "type": "circle", "stroke": { "width": 0, "color": "#000000" }, "polygon": { "nb_sides": 5 } },
+                "opacity": { "value": 0.5, "random": false, "anim": { "enable": false, "speed": 1, "opacity_min": 0.1, "sync": false } },
+                "size": { "value": 3, "random": true, "anim": { "enable": false, "speed": 40, "size_min": 0.1, "sync": false } },
+                "line_linked": { "enable": true, "distance": 150, "color": "#ffffff", "opacity": 0.4, "width": 1 },
+                "move": { "enable": true, "speed": 2, "direction": "none", "random": false, "straight": false, "out_mode": "out", "bounce": false, "attract": { "enable": false, "rotateX": 600, "rotateY": 1200 } }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": { "onhover": { "enable": true, "mode": "repulse" }, "onclick": { "enable": true, "mode": "push" }, "resize": true },
+                "modes": { "grab": { "distance": 400, "line_linked": { "opacity": 1 } }, "bubble": { "distance": 400, "size": 40, "duration": 2, "opacity": 8, "speed": 3 }, "repulse": { "distance": 200, "duration": 0.4 }, "push": { "particles_nb": 4 }, "remove": { "particles_nb": 2 } }
+            },
+            "retina_detect": true
+        });
+
+        // --- Typed.js Initialization ---
+        var typed = new Typed('#typed-text', {
+            strings: ['IT Engineer', 'Full-Stack Developer', 'AI Enthusiast', 'Problem Solver'],
+            typeSpeed: 70,
+            backSpeed: 50,
+            loop: true
+        });
+
+        // --- Mobile Menu Toggle ---
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // --- Scroll Reveal Animation ---
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 150;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                } else {
+                    // Optional: remove active class to re-trigger animation on scroll up
+                    // reveals[i].classList.remove("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        // Initial check on load
+        reveal();
+    </script>
+
+</body>
+</html>

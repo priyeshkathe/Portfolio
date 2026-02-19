@@ -90,3 +90,39 @@ navLinks.forEach(link => {
         }
     });
 });
+
+/* ================= VISITOR COUNTER ================= */
+
+// run only if firebase loaded + visitor element exists
+const visitorEl = document.getElementById("visitorCount");
+
+if (visitorEl && typeof firebase !== "undefined") {
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDZZ9CkBdiS0UJGb5UTT7280p-2SrGxOf0",
+        authDomain: "portfolio-visitor-fbc1e.firebaseapp.com",
+        databaseURL: "https://portfolio-visitor-fbc1e-default-rtdb.firebaseio.com",
+        projectId: "portfolio-visitor-fbc1e",
+        storageBucket: "portfolio-visitor-fbc1e.firebasestorage.app",
+        messagingSenderId: "1037738083549",
+        appId: "1:1037738083549:web:bc4ef62858d74050ff8734"
+    };
+
+    // Prevent multiple initialization
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+
+    const db = firebase.database();
+    const visitRef = db.ref("total_visits");
+
+    // Increase count safely
+    visitRef.transaction((count) => {
+        return (count || 0) + 1;
+    });
+
+    // Show count live
+    visitRef.on("value", (snapshot) => {
+        visitorEl.textContent = snapshot.val();
+    });
+}

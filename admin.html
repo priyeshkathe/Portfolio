@@ -25,7 +25,14 @@ border-radius:8px;
 
 .visitor{
 border-bottom:1px solid #333;
-padding:10px 0;
+padding:15px 0;
+margin-bottom:10px;
+}
+
+.pages{
+margin-left:15px;
+font-size:14px;
+color:#ccc;
 }
 
 </style>
@@ -38,8 +45,8 @@ padding:10px 0;
 
 <div class="card">
 
-<h2>Total Visitors: <span id="totalVisitors">Loading...</span></h2>
-<h2>Total Page Views: <span id="totalViews">Loading...</span></h2>
+<h2>Total Visitors: <span id="totalVisitors">0</span></h2>
+<h2>Total Page Views: <span id="totalViews">0</span></h2>
 
 </div>
 
@@ -67,17 +74,23 @@ firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
 
-/* totals */
+/* -------- TOTAL VISITORS -------- */
 
 db.ref("analytics/totals/totalVisitors").on("value",snap=>{
+
 document.getElementById("totalVisitors").innerText = snap.val() || 0;
+
 });
+
+/* -------- TOTAL PAGE VIEWS -------- */
 
 db.ref("analytics/totals/totalPageViews").on("value",snap=>{
+
 document.getElementById("totalViews").innerText = snap.val() || 0;
+
 });
 
-/* sessions */
+/* -------- VISITOR SESSIONS -------- */
 
 db.ref("analytics/sessions").on("value",snap=>{
 
@@ -99,19 +112,43 @@ div.innerHTML =
 
 "<b>Session:</b> " + id + "<br>" +
 
-"<b>Country:</b> " + data.country + "<br>" +
+"<b>Country:</b> " + (data.country || "Unknown") + "<br>" +
 
-"<b>City:</b> " + data.city + "<br>" +
+"<b>City:</b> " + (data.city || "Unknown") + "<br>" +
 
-"<b>Device:</b> " + data.device + "<br>" +
+"<b>Device:</b> " + (data.device || "Unknown") + "<br>" +
 
-"<b>Browser:</b> " + data.browser + "<br>" +
+"<b>Browser:</b> " + (data.browser || "Unknown") + "<br>" +
 
-"<b>Traffic Source:</b> " + data.trafficSource + "<br>" +
+"<b>Traffic Source:</b> " + (data.trafficSource || "Direct") + "<br>" +
 
-"<b>First Visit:</b> " + data.firstVisit;
+"<b>First Visit:</b> " + (data.firstVisit || "-") +
+
+"<div class='pages' id='pages_"+id+"'></div>";
 
 container.appendChild(div);
+
+/* LOAD PAGE VISITS */
+
+db.ref("analytics/page_visits/" + id).once("value",visitSnap=>{
+
+const pageContainer = document.getElementById("pages_"+id);
+
+visitSnap.forEach(v=>{
+
+const visit = v.val();
+
+const p = document.createElement("div");
+
+p.innerText =
+"Page: " + visit.page +
+" | Time Spent: " + visit.timeSpentSeconds + "s";
+
+pageContainer.appendChild(p);
+
+});
+
+});
 
 });
 

@@ -90,39 +90,159 @@ navLinks.forEach(link => {
         }
     });
 });
+/* ================= PORTFOLIO ANALYTICS SYSTEM ================= */
 
-/* ================= VISITOR COUNTER ================= */
+if (typeof firebase !== "undefined") {
 
-// run only if firebase loaded + visitor element exists
-const visitorEl = document.getElementById("visitorCount");
+const firebaseConfig = {
+apiKey: "AIzaSyDZZ9CkBdiS0UJGb5UTT7280p-2SrGxOf0",
+authDomain: "portfolio-visitor-fbc1e.firebaseapp.com",
+databaseURL: "https://portfolio-visitor-fbc1e-default-rtdb.firebaseio.com",
+projectId: "portfolio-visitor-fbc1e",
+storageBucket: "portfolio-visitor-fbc1e.firebasestorage.app",
+messagingSenderId: "1037738083549",
+appId: "1:1037738083549:web:bc4ef62858d74050ff8734"
+};
 
-if (visitorEl && typeof firebase !== "undefined") {
+if (!firebase.apps.length) {
+firebase.initializeApp(firebaseConfig);
+}
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyDZZ9CkBdiS0UJGb5UTT7280p-2SrGxOf0",
-        authDomain: "portfolio-visitor-fbc1e.firebaseapp.com",
-        databaseURL: "https://portfolio-visitor-fbc1e-default-rtdb.firebaseio.com",
-        projectId: "portfolio-visitor-fbc1e",
-        storageBucket: "portfolio-visitor-fbc1e.firebasestorage.app",
-        messagingSenderId: "1037738083549",
-        appId: "1:1037738083549:web:bc4ef62858d74050ff8734"
-    };
+const db = firebase.database();
 
-    // Prevent multiple initialization
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
+/* -------- SESSION SYSTEM -------- */
 
-    const db = firebase.database();
-    const visitRef = db.ref("total_visits");
+function getSessionId(){
 
-    // Increase count safely
-    visitRef.transaction((count) => {
-        return (count || 0) + 1;
-    });
+let session = localStorage.getItem("portfolio_session");
 
-    // Show count live
-    visitRef.on("value", (snapshot) => {
-        visitorEl.textContent = snapshot.val();
-    });
+if(!session){
+session = "session_" + Math.random().toString(36).substring(2,10);
+localStorage.setItem("portfolio_session", session);
+}
+
+return session;
+}
+
+const sessionId = getSessionId();
+
+/* -------- DETECT DEVICE -------- */
+
+function getDevice(){
+
+if(/mobile/i.test(navigator.userAgent)) return "Mobile";
+if(/tablet/i.test(navigator.userAgent)) return "Tablet";
+return "Desktop";
+
+}
+
+/* -------- DETECT BROWSER -------- */
+
+function getBrowser(){
+
+const ua = navigator.userAgent;
+
+if(ua.includes("Chrome")) return "Chrome";
+if(ua.includes("Firefox")) return "Firefox";
+if(ua.includes("Safari")) return "Safari";
+if(ua.includes("Edge")) return "Edge";
+
+return "Unknown";
+
+}
+
+/* -------- TRAFFIC SOURCE -------- */
+
+function getTrafficSource(){
+
+const ref = document.referrer;
+
+if(!ref) return "Direct";
+
+if(ref.includes("google")) return "Google Search";
+
+if(ref.includes("linkedin")) return "LinkedIn";
+
+if(ref.includes("github")) return "GitHub";
+
+return ref;
+
+}
+
+/* -------- FIRST VISITOR DATA -------- */
+
+const sessionRef = db.ref("analytics/sessions/" + sessionId);
+
+fetch("https://ipapi.co/json/")
+.then(res=>res.json())
+.then(data=>{
+
+sessionRef.once("value",snap=>{
+
+if(!snap.exists()){
+
+const visitorData = {
+
+ip:data.ip,
+city:data.city,
+region:data.region,
+country:data.country_name,
+
+device:getDevice(),
+browser:getBrowser(),
+
+screen:screen.width + "x" + screen.height,
+
+language:navigator.language,
+
+timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,
+
+trafficSource:getTrafficSource(),
+
+firstVisit:new Date().toLocaleString()
+
+};
+
+sessionRef.set(visitorData);
+
+/* increase total visitors */
+
+db.ref("analytics/totals/totalVisitors").transaction(count=>{
+return (count || 0) + 1;
+});
+
+}
+
+});
+
+});
+
+/* -------- PAGE VIEW TRACKING -------- */
+
+db.ref("analytics/totals/totalPageViews").transaction(count=>{
+return (count || 0) + 1;
+});
+
+/* -------- PAGE VISIT + TIME SPENT -------- */
+
+const startTime = Date.now();
+
+window.addEventListener("beforeunload",()=>{
+
+const timeSpent = Math.round((Date.now() - startTime)/1000);
+
+const visitData = {
+
+page:window.location.pathname,
+
+timeSpentSeconds:timeSpent,
+
+time:new Date().toLocaleString()
+
+};
+
+db.ref("analytics/page_visits/" + sessionId).push(visitData);
+
+});
+
 }

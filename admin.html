@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Portfolio Analytics Dashboard</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#111;
+color:white;
+padding:40px;
+}
+
+h1{
+margin-bottom:30px;
+}
+
+.card{
+background:#1e1e1e;
+padding:20px;
+margin-bottom:20px;
+border-radius:8px;
+}
+
+.visitor{
+border-bottom:1px solid #333;
+padding:10px 0;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Portfolio Analytics</h1>
+
+<div class="card">
+
+<h2>Total Visitors: <span id="totalVisitors">Loading...</span></h2>
+<h2>Total Page Views: <span id="totalViews">Loading...</span></h2>
+
+</div>
+
+<div class="card">
+
+<h2>Visitor Sessions</h2>
+
+<div id="sessions"></div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<script>
+
+const firebaseConfig = {
+apiKey:"AIzaSyDZZ9CkBdiS0UJGb5UTT7280p-2SrGxOf0",
+authDomain:"portfolio-visitor-fbc1e.firebaseapp.com",
+databaseURL:"https://portfolio-visitor-fbc1e-default-rtdb.firebaseio.com",
+projectId:"portfolio-visitor-fbc1e"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.database();
+
+/* totals */
+
+db.ref("analytics/totals/totalVisitors").on("value",snap=>{
+document.getElementById("totalVisitors").innerText = snap.val() || 0;
+});
+
+db.ref("analytics/totals/totalPageViews").on("value",snap=>{
+document.getElementById("totalViews").innerText = snap.val() || 0;
+});
+
+/* sessions */
+
+db.ref("analytics/sessions").on("value",snap=>{
+
+const container = document.getElementById("sessions");
+
+container.innerHTML="";
+
+snap.forEach(child=>{
+
+const id = child.key;
+
+const data = child.val();
+
+const div = document.createElement("div");
+
+div.className="visitor";
+
+div.innerHTML =
+
+"<b>Session:</b> " + id + "<br>" +
+
+"<b>Country:</b> " + data.country + "<br>" +
+
+"<b>City:</b> " + data.city + "<br>" +
+
+"<b>Device:</b> " + data.device + "<br>" +
+
+"<b>Browser:</b> " + data.browser + "<br>" +
+
+"<b>Traffic Source:</b> " + data.trafficSource + "<br>" +
+
+"<b>First Visit:</b> " + data.firstVisit;
+
+container.appendChild(div);
+
+});
+
+});
+
+</script>
+
+</body>
+</html>

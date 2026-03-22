@@ -110,7 +110,7 @@ firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
 
-/* -------- SESSION SYSTEM -------- */
+/* ---------- SESSION SYSTEM ---------- */
 
 function getSessionId(){
 
@@ -122,11 +122,12 @@ localStorage.setItem("portfolio_session", session);
 }
 
 return session;
+
 }
 
 const sessionId = getSessionId();
 
-/* -------- DETECT DEVICE -------- */
+/* ---------- DEVICE ---------- */
 
 function getDevice(){
 
@@ -136,7 +137,7 @@ return "Desktop";
 
 }
 
-/* -------- DETECT BROWSER -------- */
+/* ---------- BROWSER ---------- */
 
 function getBrowser(){
 
@@ -151,7 +152,7 @@ return "Unknown";
 
 }
 
-/* -------- TRAFFIC SOURCE -------- */
+/* ---------- TRAFFIC SOURCE ---------- */
 
 function getTrafficSource(){
 
@@ -169,15 +170,15 @@ return ref;
 
 }
 
-/* -------- FIRST VISITOR DATA -------- */
+/* ---------- VISITOR INFO ---------- */
 
 const sessionRef = db.ref("analytics/sessions/" + sessionId);
 
 fetch("https://ipapi.co/json/")
-.then(res=>res.json())
-.then(data=>{
+.then(res => res.json())
+.then(data => {
 
-sessionRef.once("value",snap=>{
+sessionRef.once("value", snap => {
 
 if(!snap.exists()){
 
@@ -217,17 +218,17 @@ return (count || 0) + 1;
 
 });
 
-/* -------- PAGE VIEW TRACKING -------- */
+/* ---------- PAGE VIEW ---------- */
 
 db.ref("analytics/totals/totalPageViews").transaction(count=>{
 return (count || 0) + 1;
 });
 
-/* -------- PAGE VISIT + TIME SPENT -------- */
+/* ---------- TIME SPENT ---------- */
 
 const startTime = Date.now();
 
-window.addEventListener("beforeunload",()=>{
+window.addEventListener("beforeunload", ()=>{
 
 const timeSpent = Math.round((Date.now() - startTime)/1000);
 
@@ -244,5 +245,24 @@ time:new Date().toLocaleString()
 db.ref("analytics/page_visits/" + sessionId).push(visitData);
 
 });
+
+/* ---------- OPTIONAL GPS LOCATION ---------- */
+
+if(navigator.geolocation){
+
+navigator.geolocation.getCurrentPosition(pos=>{
+
+const gpsData = {
+
+lat:pos.coords.latitude,
+lon:pos.coords.longitude
+
+};
+
+db.ref("analytics/sessions/" + sessionId + "/gps").set(gpsData);
+
+});
+
+}
 
 }

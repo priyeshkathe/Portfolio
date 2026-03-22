@@ -12,10 +12,6 @@ color:white;
 padding:40px;
 }
 
-h1{
-margin-bottom:30px;
-}
-
 .card{
 background:#1e1e1e;
 padding:20px;
@@ -26,13 +22,12 @@ border-radius:8px;
 .visitor{
 border-bottom:1px solid #333;
 padding:15px 0;
-margin-bottom:10px;
 }
 
 .pages{
-margin-left:15px;
-font-size:14px;
+margin-left:20px;
 color:#ccc;
+font-size:14px;
 }
 
 </style>
@@ -74,23 +69,17 @@ firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
 
-/* -------- TOTAL VISITORS -------- */
+/* totals */
 
 db.ref("analytics/totals/totalVisitors").on("value",snap=>{
-
 document.getElementById("totalVisitors").innerText = snap.val() || 0;
-
 });
-
-/* -------- TOTAL PAGE VIEWS -------- */
 
 db.ref("analytics/totals/totalPageViews").on("value",snap=>{
-
 document.getElementById("totalViews").innerText = snap.val() || 0;
-
 });
 
-/* -------- VISITOR SESSIONS -------- */
+/* sessions */
 
 db.ref("analytics/sessions").on("value",snap=>{
 
@@ -108,43 +97,36 @@ const div = document.createElement("div");
 
 div.className="visitor";
 
-div.innerHTML =
+div.innerHTML=
 
-"<b>Session:</b> " + id + "<br>" +
-
-"<b>Country:</b> " + (data.country || "Unknown") + "<br>" +
-
-"<b>City:</b> " + (data.city || "Unknown") + "<br>" +
-
-"<b>Device:</b> " + (data.device || "Unknown") + "<br>" +
-
-"<b>Browser:</b> " + (data.browser || "Unknown") + "<br>" +
-
-"<b>Traffic Source:</b> " + (data.trafficSource || "Direct") + "<br>" +
-
-"<b>First Visit:</b> " + (data.firstVisit || "-") +
-
+"<b>Session:</b> "+id+"<br>"+
+"<b>Country:</b> "+(data.country || "Unknown")+"<br>"+
+"<b>City:</b> "+(data.city || "Unknown")+"<br>"+
+"<b>Device:</b> "+(data.device || "Unknown")+"<br>"+
+"<b>Browser:</b> "+(data.browser || "Unknown")+"<br>"+
+"<b>Traffic:</b> "+(data.trafficSource || "Direct")+"<br>"+
+"<b>First Visit:</b> "+(data.firstVisit || "-")+"<br>"+
+"<b>GPS:</b> "+(data.gps ? data.gps.lat+", "+data.gps.lon : "Not allowed")+"<br>"+
 "<div class='pages' id='pages_"+id+"'></div>";
 
 container.appendChild(div);
 
-/* LOAD PAGE VISITS */
+/* page visits */
 
-db.ref("analytics/page_visits/" + id).once("value",visitSnap=>{
+db.ref("analytics/page_visits/"+id).once("value",snap2=>{
 
-const pageContainer = document.getElementById("pages_"+id);
+const pages = document.getElementById("pages_"+id);
 
-visitSnap.forEach(v=>{
+snap2.forEach(v=>{
 
 const visit = v.val();
 
 const p = document.createElement("div");
 
 p.innerText =
-"Page: " + visit.page +
-" | Time Spent: " + visit.timeSpentSeconds + "s";
+"Page: "+visit.page+" | Time: "+visit.timeSpentSeconds+"s";
 
-pageContainer.appendChild(p);
+pages.appendChild(p);
 
 });
 

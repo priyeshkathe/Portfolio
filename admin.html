@@ -1,142 +1,663 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Portfolio Analytics Dashboard</title>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Analytics — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --bg: #080c10;
+    --surface: #0e1419;
+    --surface2: #141b24;
+    --border: rgba(255,255,255,0.06);
+    --accent: #00e5ff;
+    --accent2: #7b61ff;
+    --accent3: #ff6b6b;
+    --green: #00ff88;
+    --text: #e8edf2;
+    --muted: #5a6a7a;
+    --font-display: 'Syne', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
 
-body{
-font-family:Arial;
-background:#111;
-color:white;
-padding:40px;
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-.card{
-background:#1e1e1e;
-padding:20px;
-margin-bottom:20px;
-border-radius:8px;
-}
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-display);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-.visitor{
-border-bottom:1px solid #333;
-padding:15px 0;
-}
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background:
+      radial-gradient(ellipse 40% 30% at 20% 10%, rgba(0,229,255,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 40% at 80% 80%, rgba(123,97,255,0.05) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
 
-.pages{
-margin-left:20px;
-color:#ccc;
-font-size:14px;
-}
+  /* HEADER */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(8,12,16,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
+  .logo {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .logo span { color: var(--text); opacity: 0.4; }
+
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: 0.08em;
+  }
+
+  .live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* MAIN */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 40px 80px;
+  }
+
+  .page-title {
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .page-title span {
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-sub {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 40px;
+  }
+
+  /* STATS GRID */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+
+  .stat-card:hover {
+    border-color: rgba(0,229,255,0.2);
+    transform: translateY(-2px);
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-color, var(--accent)), transparent);
+    opacity: 0.6;
+  }
+
+  .stat-card.purple { --accent-color: var(--accent2); }
+  .stat-card.red { --accent-color: var(--accent3); }
+  .stat-card.green { --accent-color: var(--green); }
+
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .stat-value {
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    transition: color 0.4s;
+  }
+
+  .stat-icon {
+    position: absolute;
+    bottom: 18px;
+    right: 20px;
+    font-size: 28px;
+    opacity: 0.1;
+  }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .section-count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(0,229,255,0.08);
+    border: 1px solid rgba(0,229,255,0.15);
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  /* SESSION TABLE */
+  .sessions-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .table-head {
+    display: grid;
+    grid-template-columns: 2fr 1.2fr 1.2fr 1fr 1fr 1fr 1fr;
+    padding: 14px 24px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+
+  .th {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .session-row {
+    display: grid;
+    grid-template-columns: 2fr 1.2fr 1.2fr 1fr 1fr 1fr 1fr;
+    padding: 16px 24px;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    align-items: start;
+    transition: background 0.2s;
+    cursor: pointer;
+  }
+
+  .session-row:last-child { border-bottom: none; }
+  .session-row:hover { background: rgba(255,255,255,0.02); }
+
+  .session-row.expanded { background: rgba(0,229,255,0.02); }
+
+  .cell {
+    font-size: 13px;
+    color: var(--text);
+    word-break: break-all;
+  }
+
+  .cell-mono {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    word-break: break-all;
+  }
+
+  .cell-id {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
+  .badge-country {
+    background: rgba(123,97,255,0.12);
+    color: #a990ff;
+    border: 1px solid rgba(123,97,255,0.2);
+  }
+
+  .badge-device {
+    background: rgba(0,229,255,0.08);
+    color: var(--accent);
+    border: 1px solid rgba(0,229,255,0.15);
+  }
+
+  .badge-traffic {
+    background: rgba(0,255,136,0.08);
+    color: var(--green);
+    border: 1px solid rgba(0,255,136,0.15);
+  }
+
+  .badge-direct {
+    background: rgba(255,107,107,0.08);
+    color: var(--accent3);
+    border: 1px solid rgba(255,107,107,0.15);
+  }
+
+  .gps-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--green);
+    opacity: 0.8;
+  }
+
+  .gps-denied {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* PAGE VISITS EXPAND */
+  .pages-expand {
+    grid-column: 1 / -1;
+    padding: 16px;
+    margin: 4px 0 8px 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: none;
+  }
+
+  .pages-expand.open { display: block; }
+
+  .pages-expand-title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .page-visit-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.02);
+    margin-bottom: 6px;
+    transition: background 0.15s;
+  }
+
+  .page-visit-item:hover { background: rgba(255,255,255,0.04); }
+
+  .pv-page {
+    font-size: 13px;
+    color: var(--text);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .pv-time {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .pv-bar-wrap {
+    width: 80px;
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .pv-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    min-width: 4px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .expand-btn {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--accent);
+    background: none;
+    border: 1px solid rgba(0,229,255,0.2);
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+
+  .expand-btn:hover { background: rgba(0,229,255,0.08); }
+
+  /* EMPTY STATE */
+  .empty-state {
+    padding: 60px 24px;
+    text-align: center;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+
+  .empty-state div {
+    font-size: 32px;
+    margin-bottom: 12px;
+    opacity: 0.3;
+  }
+
+  /* LOADING */
+  .loading-row {
+    padding: 30px 24px;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  @keyframes shimmer {
+    0% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+    100% { opacity: 0.3; }
+  }
+
+  .loading-row { animation: shimmer 1.5s infinite; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    header { padding: 0 20px; }
+    main { padding: 24px 20px 60px; }
+    .table-head,
+    .session-row {
+      grid-template-columns: 1fr;
+    }
+    .th { display: none; }
+    .cell-id { white-space: normal; }
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 </style>
-
 </head>
-
 <body>
 
-<h1>Portfolio Analytics</h1>
+<header>
+  <div class="logo">Portfolio<span> / </span>Analytics</div>
+  <div class="live-badge">
+    <div class="live-dot"></div>
+    LIVE DATA
+  </div>
+</header>
 
-<div class="card">
+<main>
+  <h1 class="page-title">Admin <span>Dashboard</span></h1>
+  <p class="page-sub">// REAL-TIME VISITOR ANALYTICS · FIREBASE RTDB</p>
 
-<h2>Total Visitors: <span id="totalVisitors">0</span></h2>
-<h2>Total Page Views: <span id="totalViews">0</span></h2>
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total Visitors</div>
+      <div class="stat-value" id="totalVisitors">—</div>
+      <div class="stat-icon">👤</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-label">Total Page Views</div>
+      <div class="stat-value" id="totalViews">—</div>
+      <div class="stat-icon">📄</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Active Sessions</div>
+      <div class="stat-value" id="totalSessions">—</div>
+      <div class="stat-icon">⚡</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">GPS Collected</div>
+      <div class="stat-value" id="totalGPS">—</div>
+      <div class="stat-icon">📍</div>
+    </div>
+  </div>
 
-</div>
+  <!-- SESSIONS TABLE -->
+  <div class="section-header">
+    <span class="section-title">Visitor Sessions</span>
+    <div class="section-line"></div>
+    <span class="section-count" id="sessionCount">0 sessions</span>
+  </div>
 
-<div class="card">
-
-<h2>Visitor Sessions</h2>
-
-<div id="sessions"></div>
-
-</div>
+  <div class="sessions-table">
+    <div class="table-head">
+      <div class="th">Session ID</div>
+      <div class="th">Location</div>
+      <div class="th">Device / Browser</div>
+      <div class="th">Traffic</div>
+      <div class="th">First Visit</div>
+      <div class="th">GPS</div>
+      <div class="th">Pages</div>
+    </div>
+    <div id="sessions">
+      <div class="loading-row">Connecting to Firebase...</div>
+    </div>
+  </div>
+</main>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-
 <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDZZ9CkBdiS0UJGb5UTT7280p-2SrGxOf0",
+    authDomain: "portfolio-visitor-fbc1e.firebaseapp.com",
+    databaseURL: "https://portfolio-visitor-fbc1e-default-rtdb.firebaseio.com",
+    projectId: "portfolio-visitor-fbc1e"
+  };
 
-const firebaseConfig = {
-apiKey:"AIzaSyDZZ9CkBdiS0UJGb5UTT7280p-2SrGxOf0",
-authDomain:"portfolio-visitor-fbc1e.firebaseapp.com",
-databaseURL:"https://portfolio-visitor-fbc1e-default-rtdb.firebaseio.com",
-projectId:"portfolio-visitor-fbc1e"
-};
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-firebase.initializeApp(firebaseConfig);
+  // Counters
+  db.ref("analytics/totals/totalVisitors").on("value", snap => {
+    const v = snap.val() || 0;
+    document.getElementById("totalVisitors").textContent = v.toLocaleString();
+  });
 
-const db = firebase.database();
+  db.ref("analytics/totals/totalPageViews").on("value", snap => {
+    const v = snap.val() || 0;
+    document.getElementById("totalViews").textContent = v.toLocaleString();
+  });
 
-/* totals */
+  // Sessions
+  db.ref("analytics/sessions").on("value", snap => {
+    const container = document.getElementById("sessions");
+    container.innerHTML = "";
 
-db.ref("analytics/totals/totalVisitors").on("value",snap=>{
-document.getElementById("totalVisitors").innerText = snap.val() || 0;
-});
+    const sessions = [];
+    snap.forEach(child => sessions.push({ id: child.key, data: child.val() }));
 
-db.ref("analytics/totals/totalPageViews").on("value",snap=>{
-document.getElementById("totalViews").innerText = snap.val() || 0;
-});
+    document.getElementById("totalSessions").textContent = sessions.length.toLocaleString();
+    document.getElementById("sessionCount").textContent = sessions.length + " session" + (sessions.length !== 1 ? "s" : "");
 
-/* sessions */
+    // GPS count
+    const gpsCount = sessions.filter(s => s.data.gps && s.data.gps.lat).length;
+    document.getElementById("totalGPS").textContent = gpsCount.toLocaleString();
 
-db.ref("analytics/sessions").on("value",snap=>{
+    if (sessions.length === 0) {
+      container.innerHTML = `<div class="empty-state"><div>📭</div>No sessions recorded yet.</div>`;
+      return;
+    }
 
-const container = document.getElementById("sessions");
+    sessions.forEach(({ id, data }) => {
+      const row = document.createElement("div");
+      row.className = "session-row";
+      row.style.display = "grid";
+      row.style.flexDirection = "";
 
-container.innerHTML="";
+      const shortId = id.length > 20 ? id.slice(0, 8) + "…" + id.slice(-6) : id;
 
-snap.forEach(child=>{
+      const trafficClass = (data.trafficSource || "direct").toLowerCase() === "direct"
+        ? "badge-direct" : "badge-traffic";
 
-const id = child.key;
+      const gpsHtml = data.gps && data.gps.lat
+        ? `<span class="gps-tag">📍 ${parseFloat(data.gps.lat).toFixed(4)}, ${parseFloat(data.gps.lon).toFixed(4)}</span>`
+        : `<span class="gps-denied">Denied</span>`;
 
-const data = child.val();
+      const expandId = "pages_" + id.replace(/[^a-z0-9]/gi, "_");
 
-const div = document.createElement("div");
+      row.innerHTML = `
+        <div class="cell cell-id" title="${id}">${shortId}</div>
+        <div class="cell">
+          <span class="badge badge-country">🌍 ${data.country || "Unknown"}</span><br>
+          <span style="font-size:11px;color:var(--muted);font-family:var(--font-mono);margin-top:4px;display:block">${data.city || "—"}</span>
+        </div>
+        <div class="cell">
+          <span class="badge badge-device">${data.device || "Unknown"}</span><br>
+          <span style="font-size:11px;color:var(--muted);font-family:var(--font-mono);margin-top:4px;display:block">${data.browser || "—"}</span>
+        </div>
+        <div class="cell"><span class="badge ${trafficClass}">${data.trafficSource || "Direct"}</span></div>
+        <div class="cell cell-mono">${data.firstVisit || "—"}</div>
+        <div class="cell">${gpsHtml}</div>
+        <div class="cell">
+          <button class="expand-btn" data-target="${expandId}">View ▾</button>
+        </div>
+        <div class="pages-expand" id="${expandId}">
+          <div class="pages-expand-title">// Page Visits</div>
+          <div class="pv-list">Loading...</div>
+        </div>
+      `;
 
-div.className="visitor";
+      container.appendChild(row);
 
-div.innerHTML=
+      // Expand button
+      const btn = row.querySelector(".expand-btn");
+      const expandEl = row.querySelector(".pages-expand");
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isOpen = expandEl.classList.toggle("open");
+        row.classList.toggle("expanded", isOpen);
+        btn.textContent = isOpen ? "Hide ▴" : "View ▾";
+        row.style.gridTemplateColumns = "2fr 1.2fr 1.2fr 1fr 1fr 1fr 1fr";
+        // Load pages when expanded
+        if (isOpen && expandEl.querySelector(".pv-list").textContent === "Loading...") {
+          loadPages(id, expandEl.querySelector(".pv-list"));
+        }
+      });
+    });
+  });
 
-"<b>Session:</b> "+id+"<br>"+
-"<b>Country:</b> "+(data.country || "Unknown")+"<br>"+
-"<b>City:</b> "+(data.city || "Unknown")+"<br>"+
-"<b>Device:</b> "+(data.device || "Unknown")+"<br>"+
-"<b>Browser:</b> "+(data.browser || "Unknown")+"<br>"+
-"<b>Traffic:</b> "+(data.trafficSource || "Direct")+"<br>"+
-"<b>First Visit:</b> "+(data.firstVisit || "-")+"<br>"+
-"<b>GPS:</b> "+(data.gps ? data.gps.lat+", "+data.gps.lon : "Not allowed")+"<br>"+
-"<div class='pages' id='pages_"+id+"'></div>";
+  function loadPages(sessionId, container) {
+    db.ref("analytics/page_visits/" + sessionId).once("value", snap => {
+      container.innerHTML = "";
+      let maxTime = 0;
+      const items = [];
+      snap.forEach(v => {
+        const visit = v.val();
+        const t = parseInt(visit.timeSpentSeconds) || 0;
+        if (t > maxTime) maxTime = t;
+        items.push({ page: visit.page, time: t });
+      });
 
-container.appendChild(div);
+      if (items.length === 0) {
+        container.innerHTML = `<div style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">No page visits recorded.</div>`;
+        return;
+      }
 
-/* page visits */
-
-db.ref("analytics/page_visits/"+id).once("value",snap2=>{
-
-const pages = document.getElementById("pages_"+id);
-
-snap2.forEach(v=>{
-
-const visit = v.val();
-
-const p = document.createElement("div");
-
-p.innerText =
-"Page: "+visit.page+" | Time: "+visit.timeSpentSeconds+"s";
-
-pages.appendChild(p);
-
-});
-
-});
-
-});
-
-});
-
+      items.forEach(({ page, time }) => {
+        const pct = maxTime > 0 ? Math.max(4, (time / maxTime) * 100) : 4;
+        const el = document.createElement("div");
+        el.className = "page-visit-item";
+        el.innerHTML = `
+          <div class="pv-page">/${page || ""}</div>
+          <div class="pv-bar-wrap"><div class="pv-bar" style="width:${pct}%"></div></div>
+          <div class="pv-time">${time}s</div>
+        `;
+        container.appendChild(el);
+      });
+    });
+  }
 </script>
-
 </body>
 </html>
